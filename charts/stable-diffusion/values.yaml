@@ -1,0 +1,24 @@
+cm2:
+  auth: moophlo:ThisIsMySuperVeryComplexPassword.75
+diffusion:
+  diffusion:
+    containerSecurityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+      privileged: true
+    env:
+      hipVisibleDevices: "0"
+    image:
+      repository: moophlo/stable-diffusion
+      tag: latest
+    resources:
+      limits:
+        amd.com/gpu: "1"
+  ports:
+  - name: "7860"
+    port: 7860
+    targetPort: 7860
+  replicas: 1
+  type: ClusterIP
+kubernetesClusterDomain: cluster.local

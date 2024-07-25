@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stable-diffusion.fullname" . }}-diffusion
+  labels:
+    io.kompose.service: diffusion
+  {{- include "stable-diffusion.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.34.0 (cbf2835db)
+spec:
+  replicas: {{ .Values.diffusion.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: diffusion
+    {{- include "stable-diffusion.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: diffusion
+      {{- include "stable-diffusion.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.34.0 (cbf2835db)
+    spec:
+      containers:
+      - env:
+        - name: HIP_VISIBLE_DEVICES
+          value: {{ quote .Values.diffusion.diffusion.env.hipVisibleDevices }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.diffusion.diffusion.image.repository }}:{{ .Values.diffusion.diffusion.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          exec:
+            command:
+            - curl --fail http://localhost:7860/sdapi/v1/options || exit 1
+          failureThreshold: 3
+          initialDelaySeconds: 240
+          periodSeconds: 30
+          timeoutSeconds: 30
+        name: diffusion
+        ports:
+        - containerPort: 7860
+          protocol: TCP
+        resources: {{- toYaml .Values.diffusion.diffusion.resources | nindent 10 }}
+        securityContext: {{- toYaml .Values.diffusion.diffusion.containerSecurityContext
+          | nindent 10 }}
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /dockerx/stable-diffusion-webui/auth
+          name: diffusion-cm2
+          subPath: auth
+      restartPolicy: Always
+      tolerations:
+      - effect: NoSchedule
+        key: gpu
+        operator: Equal
+        value: "true"
+      volumes:
+      - configMap:
+          items:
+          - key: auth
+            path: auth
+          name: {{ include "stable-diffusion.fullname" . }}-cm2
+        name: diffusion-cm2
