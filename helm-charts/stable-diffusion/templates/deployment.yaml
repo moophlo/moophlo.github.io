@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stable-diffusion.fullname" . }}-sd-stable-diffusion-diffusion
+  labels:
+    io.kompose.service: diffusion
+  {{- include "stable-diffusion.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.34.0 (cbf2835db)
+spec:
+  replicas: {{ .Values.sdStableDiffusionDiffusion.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: diffusion
+    {{- include "stable-diffusion.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: diffusion
+      {{- include "stable-diffusion.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.34.0 (cbf2835db)
+    spec:
+      containers:
+      - env:
+        - name: HIP_VISIBLE_DEVICES
+          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.hipVisibleDevices
+            }}
+        - name: COMMANDLINE_ARGS
+          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.commandlineArgs
+            }}
+        - name: WEBUI_USER
+          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.webuiUser }}
+        - name: WEBUI_PASSWORD
+          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.webuiPassword
+            }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.sdStableDiffusionDiffusion.diffusion.image.repository }}:{{ .Values.sdStableDiffusionDiffusion.diffusion.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.sdStableDiffusionDiffusion.diffusion.imagePullPolicy
+          }}
+        livenessProbe:
+          exec:
+            command:
+            - curl --fail http://localhost:7860/sdapi/v1/options || exit 1
+          failureThreshold: 3
+          initialDelaySeconds: 900
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 30
+        name: diffusion
+        ports:
+        - containerPort: 7860
+          name: 7860tcp
+          protocol: TCP
+        resources: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.resources |
+          nindent 10 }}
+        securityContext: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.containerSecurityContext
+          | nindent 10 }}
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+        volumeMounts:
+        - mountPath: /dockerx/stable-diffusion-webui/auth
+          name: diffusion-cm
+          subPath: auth
+        - mountPath: /dockerx/stable-diffusion-webui/models
+          name: diffusion-models
+        - mountPath: /dockerx/stable-diffusion-webui/extensions
+          name: diffusion-extensions
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      tolerations: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.tolerations
+          | nindent 6 }}
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: auth
+            path: auth
+          name: sd-stable-diffusion-cm
+        name: diffusion-cm
+      - emptyDir: {}
+        name: diffusion-models
+      - emptyDir: {}
+        name: diffusion-extensions

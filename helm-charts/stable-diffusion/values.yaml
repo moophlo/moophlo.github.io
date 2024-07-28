@@ -1,0 +1,36 @@
+diffusion:
+  ports:
+  - name: "7860"
+    port: 7860
+    targetPort: 7860
+  type: ClusterIP
+diffusionCm:
+  auth: moophlo:ThisIsMySuperVeryComplexPassword.75
+sdStableDiffusionDiffusion:
+  diffusion:
+    containerSecurityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+      privileged: true
+    env:
+      commandlineArgs: --listen --device-id=0 --precision full --no-half --medvram
+        --skip-version-check --api --gradio-auth-path auth --enable-insecure-extension-access
+        --opt-sub-quad-attention
+      hipVisibleDevices: "1"
+      kubernetesClusterDomain: cluster.local
+      webuiPassword: ThisIsMySuperSecurePassword.123
+      webuiUser: admin
+    image:
+      repository: moophlo/stable-diffusion
+      tag: v1.10.0_rocm5.2
+    imagePullPolicy: Always
+    resources:
+      limits:
+        amd.com/gpu: "1"
+    replicas: 1
+    tolerations:
+      - effect: NoSchedule
+        key: gpu
+        operator: Equal
+        value: "true"
