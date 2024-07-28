@@ -3,6 +3,16 @@ entries:
   stable-diffusion:
   - apiVersion: v2
     appVersion: 1.10.0
+    created: "2024-07-28T06:57:35.034241464Z"
+    description: A Helm chart for Kubernetes
+    digest: e0cd200b076c645661ac9c733c9ab05130c2d6680461729bf7279c604bb6f0d8
+    name: stable-diffusion
+    type: application
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/stable-diffusion-0.1.3/stable-diffusion-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.10.0
     created: "2024-07-28T06:50:19.891834936Z"
     description: A Helm chart for Kubernetes
     digest: 1bbf602b7f0c8a4ed9f9ddc5690d2219dcaeb5ec9011206f5382ffe8fa7bcfaf
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/moophlo/moophlo.github.io/releases/download/stable-diffusion-0.1.0/stable-diffusion-0.1.0.tgz
     version: 0.1.0
-generated: "2024-07-28T06:50:19.891874329Z"
+generated: "2024-07-28T06:57:35.034256272Z"
