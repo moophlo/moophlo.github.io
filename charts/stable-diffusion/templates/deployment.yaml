@@ -36,8 +36,6 @@ spec:
         - name: WEBUI_PASSWORD
           value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.webuiPassword
             }}
-        - name: KUBERNETES_CLUSTER_DOMAIN
-          value: {{ quote .Values.kubernetesClusterDomain }}
         image: {{ .Values.sdStableDiffusionDiffusion.diffusion.image.repository }}:{{ .Values.sdStableDiffusionDiffusion.diffusion.image.tag
           | default .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.sdStableDiffusionDiffusion.diffusion.imagePullPolicy
@@ -65,9 +63,6 @@ spec:
         terminationMessagePolicy: File
         tty: true
         volumeMounts:
-        - mountPath: /dockerx/stable-diffusion-webui/auth
-          name: diffusion-cm
-          subPath: auth
         - mountPath: /dockerx/stable-diffusion-webui/models
           name: diffusion-models
         - mountPath: /dockerx/stable-diffusion-webui/extensions

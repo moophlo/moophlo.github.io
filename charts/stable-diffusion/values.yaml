@@ -4,8 +4,6 @@ diffusion:
     port: 7860
     targetPort: 7860
   type: ClusterIP
-diffusionCm:
-  auth: moophlo:ThisIsMySuperVeryComplexPassword.75
 sdStableDiffusionDiffusion:
   diffusion:
     containerSecurityContext:
@@ -18,7 +16,6 @@ sdStableDiffusionDiffusion:
         --skip-version-check --api --gradio-auth-path auth --enable-insecure-extension-access
         --opt-sub-quad-attention
       hipVisibleDevices: "1"
-      kubernetesClusterDomain: cluster.local
       webuiPassword: ThisIsMySuperSecurePassword.123
       webuiUser: admin
     image:
