@@ -1,10 +1,23 @@
+pvc:
+  ext:
+    storageClass: manual
+    storageRequest: 5Gi
+    path: /media/muflo/Volume10TB/AI/kube-sd-ext
+  models:
+    storageClass: manual
+    storageRequest: 500Gi
+    path: /media/muflo/Volume10TB/AI/kube-sd-models
+  venv:
+    storageClass: manual
+    storageRequest: 15Gi
+    path: /media/muflo/Volume10TB/AI/kube-sd-venv
 diffusion:
   ports:
   - name: "7860"
     port: 7860
     targetPort: 7860
   type: ClusterIP
-sdStableDiffusionDiffusion:
+sd:
   diffusion:
     containerSecurityContext:
       capabilities:

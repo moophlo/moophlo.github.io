@@ -9,7 +9,7 @@ metadata:
     kompose.cmd: kompose convert
     kompose.version: 1.34.0 (cbf2835db)
 spec:
-  replicas: {{ .Values.sdStableDiffusionDiffusion.replicas }}
+  replicas: {{ .Values.sd.replicas }}
   selector:
     matchLabels:
       io.kompose.service: diffusion
@@ -26,19 +26,19 @@ spec:
       containers:
       - env:
         - name: HIP_VISIBLE_DEVICES
-          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.hipVisibleDevices
+          value: {{ quote .Values.sd.diffusion.env.hipVisibleDevices
             }}
         - name: COMMANDLINE_ARGS
-          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.commandlineArgs
+          value: {{ quote .Values.sd.diffusion.env.commandlineArgs
             }}
         - name: WEBUI_USER
-          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.webuiUser }}
+          value: {{ quote .Values.sd.diffusion.env.webuiUser }}
         - name: WEBUI_PASSWORD
-          value: {{ quote .Values.sdStableDiffusionDiffusion.diffusion.env.webuiPassword
+          value: {{ quote .Values.sd.diffusion.env.webuiPassword
             }}
-        image: {{ .Values.sdStableDiffusionDiffusion.diffusion.image.repository }}:{{ .Values.sdStableDiffusionDiffusion.diffusion.image.tag
+        image: {{ .Values.sd.diffusion.image.repository }}:{{ .Values.sd.diffusion.image.tag
           | default .Chart.AppVersion }}
-        imagePullPolicy: {{ .Values.sdStableDiffusionDiffusion.diffusion.imagePullPolicy
+        imagePullPolicy: {{ .Values.sd.diffusion.imagePullPolicy
           }}
         livenessProbe:
           exec:
@@ -54,9 +54,9 @@ spec:
         - containerPort: 7860
           name: 7860tcp
           protocol: TCP
-        resources: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.resources |
+        resources: {{- toYaml .Values.sd.diffusion.resources |
           nindent 10 }}
-        securityContext: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.containerSecurityContext
+        securityContext: {{- toYaml .Values.sd.diffusion.containerSecurityContext
           | nindent 10 }}
         stdin: true
         terminationMessagePath: /dev/termination-log
@@ -65,23 +65,28 @@ spec:
         volumeMounts:
         - mountPath: /dockerx/stable-diffusion-webui/models
           name: diffusion-models
+        - mountPath: /dockerx/stable-diffusion-webui/venv
+          name: diffusion-venv
         - mountPath: /dockerx/stable-diffusion-webui/extensions
           name: diffusion-extensions
+      dnsConfig:
+        nameservers:
+        - 1.1.1.1
+      dnsPolicy: None
+      hostNetwork: true
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
-      tolerations: {{- toYaml .Values.sdStableDiffusionDiffusion.diffusion.tolerations
+      tolerations: {{- toYaml .Values.sd.diffusion.tolerations
           | nindent 6 }}
       volumes:
-      - configMap:
-          defaultMode: 420
-          items:
-          - key: auth
-            path: auth
-          name: sd-stable-diffusion-cm
-        name: diffusion-cm
-      - emptyDir: {}
-        name: diffusion-models
-      - emptyDir: {}
-        name: diffusion-extensions
+      - name: diffusion-models
+        persistentVolumeClaim:
+          claimName: {{ include "stable-diffusion.fullname" . }}-models
+      - name: diffusion-venv
+        persistentVolumeClaim:
+          claimName: {{ include "stable-diffusion.fullname" . }}-venv
+      - name: diffusion-extensions
+        persistentVolumeClaim:
+          claimName: {{ include "stable-diffusion.fullname" . }}-ext
