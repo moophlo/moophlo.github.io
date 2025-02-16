@@ -3,6 +3,17 @@ entries:
   rainloop:
   - apiVersion: v2
     appVersion: 1.17.0
+    created: "2025-02-16T18:22:05.421256299Z"
+    description: A Helm chart for deploying the RainLoop webmail server using a custom
+      Docker image.
+    digest: 65ad944bba4b40ecce4bafc87ef910c71b1e0450aaeffbd561f3cdd946f6049a
+    name: rainloop
+    type: application
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/rainloop-0.1.2/rainloop-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.17.0
     created: "2025-02-16T17:20:26.411427921Z"
     description: A Helm chart for deploying the RainLoop webmail server using a custom
       Docker image.
@@ -74,4 +85,4 @@ entries:
     urls:
     - https://github.com/moophlo/moophlo.github.io/releases/download/stable-diffusion-0.1.0/stable-diffusion-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-16T17:20:26.411444642Z"
+generated: "2025-02-16T18:22:05.421276677Z"
