@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: moophlo/rainloop    # change to your custom image repository
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: rainloop.example.com
+      paths: ["/"]
+  tls: []   # Example: [{ hosts: [ "rainloop.example.com" ], secretName: "rainloop-tls" }]
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  mountPath: /var/www/rainloop/data
+
