@@ -19,6 +19,9 @@ spec:
         app: {{ include "rainloop.name" . }}
         release: {{ .Release.Name }}
     spec:
+      securityContext:
+        runAsUser: 82
+        runAsGroup: 82
       containers:
         - name: {{ include "rainloop.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
