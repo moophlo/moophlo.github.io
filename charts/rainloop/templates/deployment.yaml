@@ -20,8 +20,8 @@ spec:
         release: {{ .Release.Name }}
     spec:
       securityContext:
-        runAsUser: 82
-        runAsGroup: 82
+        fsGroup: 82
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
         - name: {{ include "rainloop.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

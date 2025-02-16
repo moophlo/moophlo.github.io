@@ -23,6 +23,12 @@ RUN find /var/www/rainloop -type d -exec chmod 755 {} \; && \
     find /var/www/rainloop -type f -exec chmod 644 {} \; && \
     chown -R www-data:www-data /var/www/rainloop
 
+# Create necessary Nginx directories and fix permissions
+RUN mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp/client_body && \
+    chown -R www-data:www-data /var/lib/nginx && \
+    chown -R www-data:www-data /var/log/nginx && \
+    chown -R www-data:www-data /usr/lib/nginx
+
 # Copy entrypoint script and make it executable
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
