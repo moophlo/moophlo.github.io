@@ -21,6 +21,21 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.15.4
+
+      - name: Add Helm repos for dependencies
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add minio https://charts.min.io/
+          helm repo update
+
+      - name: Build chart dependencies
+        run: |
+          helm dependency build charts/n8n
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         env:
