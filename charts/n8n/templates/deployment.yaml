@@ -88,8 +88,8 @@ spec:
         - name: {{ include "n8n.main.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.taskRunners.image.repository }}:{{ .Values.taskRunners.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.taskRunners.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if and .Values.license.enabled (or (ne .Values.license.activationKey "") (ne .Values.license.existingActivationKeySecret "")) }}
           command: ["/bin/sh"]
           args:
@@ -293,8 +293,8 @@ spec:
           {{- end }}
       {{- if eq .Values.taskRunners.mode "external" }}
         - name: {{ template "n8n.taskRunners.name" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.taskRunners.image.repository }}:{{ .Values.taskRunners.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.taskRunners.image.pullPolicy }}
           command: ["/usr/local/bin/task-runner-launcher"]
           args: ["javascript"]
           ports:
