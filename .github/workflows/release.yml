@@ -26,20 +26,17 @@ jobs:
         with:
           version: v3.15.4
 
+
       - name: Add Helm repos for dependencies (dynamic)
         shell: bash
         run: |
           set -euo pipefail
 
-          python3 - <<'PY'
-          import os, glob, hashlib
-          try:
-            import yaml
-          except Exception:
-            raise SystemExit("PyYAML not available in runner. (It normally is on ubuntu-latest.)")
+          repo_list="$(python3 - <<'PY'
+          import glob, hashlib
+          import yaml
 
           def repo_name_for(url: str) -> str:
-            # deterministic + avoids collisions
             h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:10]
             return f"repo-{h}"
 
@@ -48,26 +45,29 @@ jobs:
           for chart_yaml in glob.glob("charts/*/Chart.yaml"):
             with open(chart_yaml, "r", encoding="utf-8") as f:
               data = yaml.safe_load(f) or {}
-            deps = data.get("dependencies") or []
-            for dep in deps:
-              repo = (dep or {}).get("repository")
-              if not repo:
-                continue
-              # Only add classic HTTP(S) chart repos via `helm repo add`
+            for dep in (data.get("dependencies") or []):
+              repo = (dep or {}).get("repository") or ""
               if repo.startswith("http://") or repo.startswith("https://"):
                 repos.add(repo)
 
-          # Write a bash-friendly list to stdout
           for r in sorted(repos):
             print(f"{repo_name_for(r)}\t{r}")
           PY
-          | while IFS=$'\t' read -r name url; do
-              echo "==> helm repo add $name $url"
-              # idempotent: if it already exists, keep it
-              helm repo add "$name" "$url" >/dev/null 2>&1 || helm repo add "$name" "$url"
-            done
+          )"
 
-          helm repo update
+          if [ -z "${repo_list}" ]; then
+            echo "==> No HTTP(S) dependency repos found"
+          else
+            while IFS=$'\t' read -r name url; do
+              [ -n "${name}" ] || continue
+              echo "==> helm repo add ${name} ${url}"
+
+              # If repo exists, this will fail; ignore and continue
+              helm repo add "${name}" "${url}" >/dev/null 2>&1 || true
+            done <<< "${repo_list}"
+
+            helm repo update
+          fi
 
       - name: Build chart dependencies (only charts that have deps)
         shell: bash
