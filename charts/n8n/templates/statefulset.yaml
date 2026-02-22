@@ -254,8 +254,11 @@ spec:
               readOnly: false
           {{- end }}
           {{- if .Values.nodes.external.packages }}
-            - name: community-node-modules
-              mountPath: "/home/node/.n8n/nodes"
+            - name: {{ default "node-modules" .Values.main.persistence.volumeName }}
+              mountPath: {{ .Values.main.persistence.mountPath }}
+              {{- if .Values.main.persistence.subPath }}
+              subPath: {{ .Values.main.persistence.subPath }}
+              {{- end }}
               readOnly: false
           {{- end }}
           {{- if eq (include "n8n.postgres.ssl.hasCA" .) "true" }}
@@ -286,17 +289,17 @@ spec:
           command: ["/usr/local/bin/task-runner-launcher"]
           args: ["python"]
           ports:
-            - name: http
+            - name: runner-http
               containerPort: {{ .Values.taskRunners.external.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: http
+              port: runner-http
           readinessProbe:
             httpGet:
               path: /healthz
-              port: http
+              port: runner-http
           resources:
             {{- toYaml .Values.taskRunners.external.resources | nindent 12 }}
           env:
@@ -323,18 +326,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "n8n.taskRunners.fullname" . }}-configmap
-          volumeMounts:
-            - name: {{ default "node-modules" .Values.main.persistence.volumeName }}
-              mountPath: {{ .Values.main.persistence.mountPath }}
-              {{- if .Values.main.persistence.subPath }}
-              subPath: {{ .Values.main.persistence.subPath }}
-              {{- end }}
-              readOnly: false
-          {{- if .Values.nodes.external.packages }}
-            - name: community-node-modules
-              mountPath: "/home/node/.n8n/nodes"
-              readOnly: false
-          {{- end }}
       {{- end }}
       {{- with .Values.main.extraContainers }}
         {{- toYaml . | nindent 8 }}
