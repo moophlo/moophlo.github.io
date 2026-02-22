@@ -1,5 +1,37 @@
 apiVersion: v1
 entries:
+  collabora-muflo:
+  - apiVersion: v1
+    created: "2026-02-22T15:49:16.847446315Z"
+    description: Collabora Online helm chart
+    digest: 924a780598cb46623ab09c68e2b7e592b2bac2d37d48db9f4501c55b9db386d1
+    name: collabora-muflo
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/collabora-muflo-0.0.2/collabora-muflo-0.0.2.tgz
+    version: 0.0.2
+  mastodon:
+  - apiVersion: v2
+    appVersion: 3.3.0
+    created: "2026-02-22T15:49:17.052954659Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=21.0.0 <22.0.0'
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=15.0.0 <16.0.0'
+    - name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=19.0.0 <20.0.0'
+    description: Mastodon is a free, open-source social network server based on ActivityPub.
+    digest: 25eb0c9aee5dd2bc389e0b90191416e647fd039c725f0a3925bbffd2b4c0a0b5
+    name: mastodon
+    type: application
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/mastodon-1.2.1/mastodon-1.2.1.tgz
+    version: 1.2.1
   metrics-server:
   - annotations:
       category: Analytics
@@ -1269,4 +1301,4 @@ entries:
     urls:
     - https://github.com/moophlo/moophlo.github.io/releases/download/wordpress-13.1.0/wordpress-13.1.0.tgz
     version: 13.1.0
-generated: "2026-02-22T15:40:56.235824451Z"
+generated: "2026-02-22T15:49:17.052985307Z"
