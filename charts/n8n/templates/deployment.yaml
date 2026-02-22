@@ -342,6 +342,18 @@ spec:
       {{- if or .Values.main.persistence.enabled (eq (include "n8n.main.hasVolumes" .) "true") }}
       volumes:
       {{- end }}
+      {{- if .Values.main.persistence.enabled }}
+        - name: {{ default "node-modules" .Values.main.persistence.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ default (include "n8n-main.persistence.fullname" .) .Values.main.persistence.existingClaim }}
+      {{- else if .Values.nodes.external.packages }}
+        - name: {{ default "node-modules" .Values.main.persistence.volumeName }}
+          emptyDir: {}
+      {{- end }}
+      {{- if .Values.nodes.external.packages }}
+        - name: community-node-modules
+          emptyDir: {}
+      {{- end }}
       {{- if .Values.npmRegistry.enabled }}
         - name: npmrc
           secret:
