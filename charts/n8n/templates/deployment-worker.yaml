@@ -376,11 +376,13 @@ spec:
             claimName: {{ default (include "n8n-worker.persistence.fullname" .) .Values.worker.persistence.existingClaim }}
       {{- else if .Values.nodes.external.packages }}
         - name: {{ default "node-modules" .Values.worker.persistence.volumeName }}
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: {{ default (include "n8n-worker.persistence.fullname" .) .Values.worker.persistence.existingClaim }}
       {{- end }}
       {{- if .Values.nodes.external.packages }}
-        - name: community-node-modules
-          emptyDir: {}
+        - name: {{ default "node-modules" .Values.worker.persistence.volumeName }}
+          persistentVolumeClaim:
+            claimName: {{ default (include "n8n-worker.persistence.fullname" .) .Values.worker.persistence.existingClaim }}
       {{- end }}
       {{- if .Values.npmRegistry.enabled }}
         - name: npmrc
