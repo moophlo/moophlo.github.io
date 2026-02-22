@@ -1,0 +1,97 @@
+# Default values for collabora-muflo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+global:
+  app:
+    name: collabora-muflo
+    urlScheme: HTTPS # either HTTP or HTTPS
+    scaling:
+      enabled: true
+      min: 1
+      max: 10
+      target:
+        cpu: 70
+        memory: 0
+    monitoring:
+      activate: true
+      port: 9980
+      path: "/cool/getMetrics"
+    service:
+      name: collabora-muflo
+      type: ClusterIP
+      externalPort: 9980
+      internalPort: 9980
+  ingress:
+    name: collabora-muflo
+    tlsissuer: letsencrypt
+    tlssecret: coolwsd-public-example-com-tls
+
+replicaCount: 3 # This is the amount of how many instances of coolwsd will run
+
+image:
+  pullPolicy: Always
+  repository: collabora/code
+  tag: latest
+
+probes:
+  urlScheme: HTTP # either HTTP or HTTPS
+  port: 9980
+  readiness:
+    activate: true
+    path: /
+    initialDelaySeconds: 180
+    periodSeconds: 10
+    timeoutSeconds: 30
+    successThreshold: 1
+    failureThreshold: 3
+  liveness:
+    activate: true
+    path: /
+    initialDelaySeconds: 180
+    periodSeconds: 10
+    timeoutSeconds: 30
+    successThreshold: 1
+    failureThreshold: 3
+
+deployment:
+  name: collabora-muflo
+  type: RollingUpdate
+  minReadySeconds: 0
+  maxUnavailable: 0
+  maxSurge: 1
+
+environmentVariablesCool:
+  - name: extra_params
+    value: --o:ssl.enable=false --o:ssl.termination=true
+  - name: username
+    value:
+  - name: password
+    value:
+  - name: domain
+    value: yournextcloudserverurl
+  - name: server_name
+    value: coolwsd.public.example.com
+
+service:
+  name: collabora-muflo
+
+hpa:
+  name: collabora-muflo
+
+hosts:
+  host: coolwsd.public.example.com
+
+namespace:
+  collabora: collabora
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 2000m
+  #  memory: 256Mi
+  requests:
+    cpu: 200m
+  #  memory: 128Mi
