@@ -1,5 +1,37 @@
 apiVersion: v1
 entries:
+  metrics-server:
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.6.1
+    created: "2026-02-22T15:40:56.01454977Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Metrics Server aggregates resource usage data, such as container
+      CPU and memory usage, in a Kubernetes cluster and makes it available via the
+      Metrics API.
+    digest: e5cc6e10a81c61c08bb4a8ef4cb9e79b7e4e0564482bd22625b59c8df53e50a5
+    home: https://github.com/bitnami/charts/tree/master/bitnami/metrics-server
+    icon: https://bitnami.com/assets/stacks/metrics-server/img/metrics-server-stack-220x234.png
+    keywords:
+    - metrics-server
+    - cluster
+    - metrics
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: metrics-server
+    sources:
+    - https://github.com/bitnami/bitnami-docker-metrics-server
+    - https://github.com/kubernetes-incubator/metrics-server
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/metrics-server-5.11.3/metrics-server-5.11.3.tgz
+    version: 5.11.3
   n8n:
   - annotations:
       artifacthub.io/changes: |-
@@ -1193,4 +1225,48 @@ entries:
     urls:
     - https://github.com/moophlo/moophlo.github.io/releases/download/stable-diffusion-0.1.0/stable-diffusion-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-22T14:19:40.963718224Z"
+  wordpress:
+  - annotations:
+      category: CMS
+    apiVersion: v2
+    appVersion: 5.9.2
+    created: "2026-02-22T15:40:56.235800416Z"
+    dependencies:
+    - condition: memcached.enabled
+      name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=6.0.0 <7.0.0'
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: '>=10.0.0 <12.0.0'
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: '>=1.0.0 <2.0.0'
+    description: WordPress is the world's most popular blogging and content management
+      platform. Powerful yet simple, everyone from students to global corporations
+      use it to build beautiful, functional websites.
+    digest: 0d0debd44ed2302caab3638b19a1c6af3df9cf5017b16e359e80a0154c71afba
+    home: https://github.com/bitnami/charts/tree/master/bitnami/wordpress
+    icon: https://bitnami.com/assets/stacks/wordpress/img/wordpress-stack-220x234.png
+    keywords:
+    - application
+    - blog
+    - cms
+    - http
+    - php
+    - web
+    - wordpress
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: wordpress
+    sources:
+    - https://github.com/bitnami/bitnami-docker-wordpress
+    - https://wordpress.org/
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/wordpress-13.1.0/wordpress-13.1.0.tgz
+    version: 13.1.0
+generated: "2026-02-22T15:40:56.235824451Z"
