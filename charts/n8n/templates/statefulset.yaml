@@ -242,10 +242,10 @@ spec:
             - secretRef:
                 name: {{ . }}
           {{- end }}
-          {{- if or (eq (include "n8n.main.hasVolumeMounts" .) "true") (eq .Values.taskRunners.mode "internal") }}
+          {{- if or (eq (include "n8n.main.hasVolumeMounts" .) "true") .Values.main.persistence.enabled .Values.nodes.external.packages }}
           volumeMounts:
           {{- end }}
-          {{- if eq .Values.taskRunners.mode "internal" }}
+          {{- if .Values.main.persistence.enabled }}
             - name: {{ default "node-modules" .Values.main.persistence.volumeName }}
               mountPath: {{ .Values.main.persistence.mountPath }}
               {{- if .Values.main.persistence.subPath }}
@@ -253,7 +253,7 @@ spec:
               {{- end }}
               readOnly: false
           {{- end }}
-          {{- if and .Values.nodes.external.packages (eq .Values.taskRunners.mode "internal") }}
+          {{- if .Values.nodes.external.packages }}
             - name: community-node-modules
               mountPath: "/home/node/.n8n/nodes"
               readOnly: false
