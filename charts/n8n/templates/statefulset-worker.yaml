@@ -343,11 +343,6 @@ spec:
       {{- if eq (include "n8n.worker.hasVolumes" .) "true" }}
       volumes:
       {{- end }}
-      {{- if .Values.nodes.external.packages }}
-        - name: {{ default "node-modules" .Values.worker.persistence.volumeName }}
-          persistentVolumeClaim:
-            claimName: {{ default (include "n8n-worker.persistence.fullname" .) .Values.worker.persistence.existingClaim }}
-      {{- end }}
       {{- if .Values.npmRegistry.enabled }}
         - name: npmrc
           secret:

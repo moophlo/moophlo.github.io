@@ -333,10 +333,6 @@ spec:
       {{- if eq (include "n8n.main.hasVolumes" .) "true" }}
       volumes:
       {{- end }}
-      {{- if .Values.nodes.external.packages }}
-        - name: community-node-modules
-          emptyDir: {}
-      {{- end }}
       {{- if .Values.npmRegistry.enabled }}
         - name: npmrc
           secret:
