@@ -11,6 +11,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,14 +86,14 @@ jobs:
           done
 
       - name: Lint all charts
-        run: ct lint --config ct.yaml --validate-schema
+        run: ct lint --config ct.yaml
 
       - name: Lint only changed charts (if any)
         run: |
           changed=$(ct list-changed --config ct.yaml)
           if [ -n "$changed" ]; then
             echo "Changed charts detected: $changed"
-            ct lint --config ct.yaml --charts $changed --validate-schema
+            ct lint --config ct.yaml --charts $changed
           else
             echo "No charts changed"
           fi

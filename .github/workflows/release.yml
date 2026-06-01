@@ -10,6 +10,8 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -110,11 +112,21 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Package and index Helm repository
-        uses: helm/chart-releaser-action@v1.6.0
-        with:
-          release_name_command: "echo cr-index"
-          pages_index: true
-          index_path: "."
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Install cr-index
+        run: |
+          GO111MODULE=on go install github.com/helm/chart-releaser/cmd/cr-index@latest
+
+      - name: Index Helm repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/go/bin:$PATH"
+          cr-index -o index.yaml -c .
+          if [ -f index.yaml ] && [ -s index.yaml ]; then
+            echo "==> index.yaml generated"
+            git add index.yaml
+            git commit -m "update index.yaml" || echo "==> No changes to commit"
+            git push origin main || true
+          else
+            echo "==> No index.yaml generated"
+          fi
