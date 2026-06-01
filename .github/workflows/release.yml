@@ -29,10 +29,6 @@ jobs:
           version: v3.17.1
 
 
-      - name: Install helm unittest plugin
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest
-
-
       - name: Add Helm repos for dependencies (dynamic)
         shell: bash
         run: |
