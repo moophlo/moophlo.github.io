@@ -71,6 +71,11 @@ jobs:
             helm repo update
           fi
 
+      - name: Add Bitnami repo explicitly
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
       - name: Build chart dependencies (only charts that have deps)
         shell: bash
         run: |
