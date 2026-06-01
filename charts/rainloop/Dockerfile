@@ -1,7 +1,7 @@
 # Use PHP-FPM Alpine as the base image
-FROM php:8.0-fpm-alpine
+FROM php:8.3-fpm-alpine
 
-# Install nginx, curl, unzip, and other required packages
+# Install nginx, curl, unzip, and other required packages in a single layer
 RUN apk add --no-cache nginx curl unzip
 
 # Copy custom PHP configuration to override default limits
@@ -17,14 +17,11 @@ WORKDIR /var/www/rainloop
 # Download and install RainLoop using the official installer script
 RUN curl -sL https://repository.rainloop.net/installer.php | php
 
-
-# Adjust ownership for the RainLoop data directory to allow persistence
+# Adjust ownership, create Nginx directories, and fix permissions in a single layer
 RUN find /var/www/rainloop -type d -exec chmod 755 {} \; && \
     find /var/www/rainloop -type f -exec chmod 644 {} \; && \
-    chown -R www-data:www-data /var/www/rainloop
-
-# Create necessary Nginx directories and fix permissions
-RUN mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp/client_body && \
+    chown -R www-data:www-data /var/www/rainloop && \
+    mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp/client_body && \
     chown -R www-data:www-data /var/lib/nginx && \
     chown -R www-data:www-data /var/log/nginx && \
     chown -R www-data:www-data /usr/lib/nginx

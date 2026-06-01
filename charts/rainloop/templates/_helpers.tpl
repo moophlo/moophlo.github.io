@@ -20,3 +20,13 @@ Chart name and version.
 {{ .Chart.Name }}-{{ .Chart.Version }}
 {{- end -}}
 
+{{/*
+Create the name of the service account to use.
+*/}}
+{{- define "rainloop.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "rainloop.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

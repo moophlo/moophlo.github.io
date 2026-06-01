@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stable Diffusion values schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pvc", "diffusion", "sd"],
+  "properties": {
+    "pvc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ext", "models", "venv"],
+      "properties": {
+        "ext": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["storageClass", "storageRequest", "path"],
+          "properties": {
+            "storageClass": { "type": "string" },
+            "storageRequest": { "type": "string" },
+            "path": { "type": "string" }
+          }
+        },
+        "models": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["storageClass", "storageRequest", "path"],
+          "properties": {
+            "storageClass": { "type": "string" },
+            "storageRequest": { "type": "string" },
+            "path": { "type": "string" }
+          }
+        },
+        "venv": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["storageClass", "storageRequest", "path"],
+          "properties": {
+            "storageClass": { "type": "string" },
+            "storageRequest": { "type": "string" },
+            "path": { "type": "string" }
+          }
+        }
+      }
+    },
+    "diffusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ports", "type"],
+      "properties": {
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "port", "targetPort"],
+            "properties": {
+              "name": { "type": "string" },
+              "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+              "targetPort": { "type": "integer", "minimum": 1, "maximum": 65535 }
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer"]
+        }
+      }
+    },
+    "sd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["diffusion"],
+      "properties": {
+        "diffusion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["containerSecurityContext", "env", "image", "imagePullPolicy", "resources", "replicas", "tolerations"],
+          "properties": {
+            "containerSecurityContext": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["capabilities", "privileged"],
+              "properties": {
+                "capabilities": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "add": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                },
+                "privileged": { "type": "boolean" }
+              }
+            },
+            "env": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["commandlineArgs", "hipVisibleDevices", "webuiUser", "webuiPassword"],
+              "properties": {
+                "commandlineArgs": { "type": "string" },
+                "hipVisibleDevices": { "type": "string" },
+                "webuiUser": { "type": "string" },
+                "webuiPassword": { "type": "string" }
+              }
+            },
+            "image": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["repository", "tag"],
+              "properties": {
+                "repository": { "type": "string" },
+                "tag": { "type": "string" }
+              }
+            },
+            "imagePullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            },
+            "resources": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "limits": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "requests": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            },
+            "replicas": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tolerations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "nodeSelector": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "affinity": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

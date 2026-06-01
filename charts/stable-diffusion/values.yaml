@@ -38,9 +38,23 @@ sd:
     resources:
       limits:
         amd.com/gpu: "1"
+      requests:
+        cpu: "2"
+        memory: "4Gi"
     replicas: 1
     tolerations:
       - effect: NoSchedule
         key: gpu
         operator: Equal
         value: "true"
+    nodeSelector:
+      gpu: "true"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: gpu
+                  operator: In
+                  values:
+                    - "true"

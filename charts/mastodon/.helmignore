@@ -1,0 +1,7 @@
+# Patterns to ignore when packaging or copying this chart
+/chartpress.yaml
+/.cr.yaml
+/helm
+/charts
+/Chart.lock
+/.gitignore

@@ -49,6 +49,15 @@ spec:
           periodSeconds: 30
           successThreshold: 1
           timeoutSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /sdapi/v1/options
+            port: 7860
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         name: diffusion
         ports:
         - containerPort: 7860
@@ -80,6 +89,14 @@ spec:
       terminationGracePeriodSeconds: 30
       tolerations: {{- toYaml .Values.sd.diffusion.tolerations
           | nindent 6 }}
+      {{- if .Values.sd.diffusion.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.sd.diffusion.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.sd.diffusion.affinity }}
+      affinity:
+        {{- toYaml .Values.sd.diffusion.affinity | nindent 8 }}
+      {{- end }}
       volumes:
       - name: diffusion-models
         persistentVolumeClaim:

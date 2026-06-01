@@ -1,14 +1,15 @@
-name: Release Charts
+name: Chart CI
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  release:
-    permissions:
-      contents: write
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,20 +17,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
           version: v3.17.1
 
-
-      - name: Install helm unittest plugin
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest
-
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.7.0
 
       - name: Add Helm repos for dependencies (dynamic)
         shell: bash
@@ -65,15 +59,13 @@ jobs:
             while IFS=$'\t' read -r name url; do
               [ -n "${name}" ] || continue
               echo "==> helm repo add ${name} ${url}"
-
-              # If repo exists, this will fail; ignore and continue
               helm repo add "${name}" "${url}" >/dev/null 2>&1 || true
             done <<< "${repo_list}"
 
             helm repo update
           fi
 
-      - name: Build chart dependencies (only charts that have deps)
+      - name: Build chart dependencies
         shell: bash
         run: |
           set -euo pipefail
@@ -92,29 +84,14 @@ jobs:
           done
 
       - name: Lint all charts
-        shell: bash
+        run: ct lint --config ct.yaml --validate-schema
+
+      - name: Lint only changed charts (if any)
         run: |
-          set -euo pipefail
-          shopt -s nullglob
-          for chart_dir in charts/*; do
-            [ -d "$chart_dir" ] || continue
-            [ -f "$chart_dir/Chart.yaml" ] || continue
-            echo "==> Linting: $chart_dir"
-            helm lint "$chart_dir"
-          done
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.6.0
-        with:
-          skip_existing: true
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Package and index Helm repository
-        uses: helm/chart-releaser-action@v1.6.0
-        with:
-          release_name_command: "echo cr-index"
-          pages_index: true
-          index_path: "."
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          changed=$(ct list-changed --config ct.yaml)
+          if [ -n "$changed" ]; then
+            echo "Changed charts detected: $changed"
+            ct lint --config ct.yaml --charts $changed --validate-schema
+          else
+            echo "No charts changed"
+          fi

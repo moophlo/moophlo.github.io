@@ -2,8 +2,24 @@ replicaCount: 1
 
 image:
   repository: moophlo/rainloop    # change to your custom image repository
-  tag: latest
+  tag: 1.17.0-php8.3
   pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podSecurityContext:
+  fsGroup: 82
+  fsGroupChangePolicy: "OnRootMismatch"
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
 
 service:
   type: ClusterIP
@@ -17,7 +33,39 @@ ingress:
       paths: ["/"]
   tls: []   # Example: [{ hosts: [ "rainloop.example.com" ], secretName: "rainloop-tls" }]
 
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
