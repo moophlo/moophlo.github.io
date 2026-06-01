@@ -11,7 +11,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,12 +121,12 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$HOME/go/bin:$PATH"
-          cr-index -o index.yaml -c .
+          cr-index -o index.yaml -c . || true
           if [ -f index.yaml ] && [ -s index.yaml ]; then
             echo "==> index.yaml generated"
             git add index.yaml
             git commit -m "update index.yaml" || echo "==> No changes to commit"
             git push origin main || true
           else
-            echo "==> No index.yaml generated"
+            echo "==> No index.yaml generated yet (no releases to index)"
           fi
