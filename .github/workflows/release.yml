@@ -127,16 +127,12 @@ jobs:
             [ -d "/tmp/forked-charts/$chart" ] && mv "/tmp/forked-charts/$chart" "charts/$chart" || true
           done
 
-      - name: Install cr-index
-        run: |
-          GO111MODULE=on go install github.com/helm/chart-releaser/cmd/cr-index@latest
-
       - name: Index Helm repository
         shell: bash
         run: |
           set -euo pipefail
-          export PATH="$HOME/go/bin:$PATH"
-          cr-index -o index.yaml -c . || true
+          export PATH="/opt/hostedtoolcache/cr/*/x86_64:$PATH"
+          cr index -o index.yaml -c . || true
           if [ -f index.yaml ] && [ -s index.yaml ]; then
             echo "==> index.yaml generated"
             git add index.yaml
