@@ -106,12 +106,26 @@ jobs:
             helm lint "$chart_dir"
           done
 
+      - name: Temporarily move forked charts (not managed by this repo)
+        run: |
+          # These are forked charts, not packaged/released by this repo
+          mkdir -p /tmp/forked-charts
+          for chart in mastodon wordpress metrics-server n8n; do
+            [ -d "charts/$chart" ] && mv "charts/$chart" /tmp/forked-charts/ || true
+          done
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
           skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Restore forked charts
+        run: |
+          for chart in mastodon wordpress metrics-server n8n; do
+            [ -d "/tmp/forked-charts/$chart" ] && mv "/tmp/forked-charts/$chart" "charts/$chart" || true
+          done
 
       - name: Install cr-index
         run: |
