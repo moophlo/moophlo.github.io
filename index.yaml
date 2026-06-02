@@ -1,6 +1,16 @@
 apiVersion: v1
 entries:
   collabora-muflo:
+  - apiVersion: v2
+    appVersion: 24.04.3.2
+    created: "2026-06-02T03:52:27.76772912Z"
+    description: Collabora Online helm chart
+    digest: 4eb69a7c64db34d7b73723f57473f2eaf809df3d9da24036335b408b128809a3
+    name: collabora-muflo
+    type: application
+    urls:
+    - https://github.com/moophlo/moophlo.github.io/releases/download/collabora-muflo-0.0.3/collabora-muflo-0.0.3.tgz
+    version: 0.0.3
   - apiVersion: v1
     created: "2026-02-22T15:49:16.847446315Z"
     description: Collabora Online helm chart
@@ -1301,4 +1311,4 @@ entries:
     urls:
     - https://github.com/moophlo/moophlo.github.io/releases/download/wordpress-13.1.0/wordpress-13.1.0.tgz
     version: 13.1.0
-generated: "2026-02-22T15:49:17.052985307Z"
+generated: "2026-06-02T03:52:28.072660277Z"
