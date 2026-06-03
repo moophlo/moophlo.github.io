@@ -118,6 +118,7 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         with:
           skip_existing: true
+          release_name_command: "echo moophlo-helm-charts-$1"
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
